@@ -1,3 +1,4 @@
+import random
 class Tile:
     def __init__(self):
         # Tile information
@@ -6,7 +7,7 @@ class Tile:
         self.south = None
         self.west = None
         self.center = None
-        
+        # agregar si ya hace parte de un camino cerrado y cual jugador la puso self.jugador self.vaminoCerrado
         self.orientation = 0
 
     def rotate(self):
@@ -34,7 +35,7 @@ class Tile:
             return self.west == other_tile.east
         return False
 
-class Tile1(Tile):
+class Tile1(Tile): #x2
     def __init__(self):
         super().__init__()
         self.north = "grass"
@@ -43,7 +44,7 @@ class Tile1(Tile):
         self.west = "grass"
         self.center = "start"
 
-class Tile2(Tile):
+class Tile2(Tile): #x1
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -52,7 +53,7 @@ class Tile2(Tile):
         self.west = "city"
         self.center = "city"
 
-class Tile3(Tile):
+class Tile3(Tile):#x4
     def __init__(self):
         super().__init__()
         self.north = "grass"
@@ -61,7 +62,7 @@ class Tile3(Tile):
         self.west = "road"
         self.center = "road"
         
-class Tile4(Tile):
+class Tile4(Tile):#x5
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -70,7 +71,7 @@ class Tile4(Tile):
         self.west = "grass"
         self.center = "grass"
 
-class Tile5(Tile):
+class Tile5(Tile):#x3
     def __init__(self):
         super().__init__()
         self.north = "grass"
@@ -79,7 +80,7 @@ class Tile5(Tile):
         self.west = "city"
         self.center = "city"
         
-class Tile6(Tile):
+class Tile6(Tile):#x3
     def __init__(self):
         super().__init__()
         self.north = "grass"
@@ -88,7 +89,7 @@ class Tile6(Tile):
         self.west = "city"
         self.center = "grass"
         
-class Tile7(Tile):
+class Tile7(Tile):#x3
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -97,7 +98,7 @@ class Tile7(Tile):
         self.west = "grass"
         self.center = "road"
 
-class Tile8(Tile):
+class Tile8(Tile):#x3
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -106,7 +107,7 @@ class Tile8(Tile):
         self.west = "road"
         self.center = "road"
 
-class Tile9(Tile):
+class Tile9(Tile):#x3
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -115,7 +116,7 @@ class Tile9(Tile):
         self.west = "road"
         self.center = "start"
 
-class Tile10(Tile):
+class Tile10(Tile):#x5
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -124,7 +125,7 @@ class Tile10(Tile):
         self.west = "grass"
         self.center = "city"
 
-class Tile11(Tile):
+class Tile11(Tile):#x5
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -133,7 +134,7 @@ class Tile11(Tile):
         self.west = "city"
         self.center = "road"
         
-class Tile12(Tile):
+class Tile12(Tile):#x4
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -142,7 +143,7 @@ class Tile12(Tile):
         self.west = "city"
         self.center = "city"
         
-class Tile13(Tile):
+class Tile13(Tile):#x3
     def __init__(self):
         super().__init__()
         self.north = "city"
@@ -151,7 +152,7 @@ class Tile13(Tile):
         self.west = "city"
         self.center = "start" #cuidado con esta al detectar conexidad de ciudades.
     
-class Tile14(Tile):
+class Tile14(Tile):#x8
     def __init__(self):
         super().__init__()
         self.north = "road"
@@ -160,7 +161,7 @@ class Tile14(Tile):
         self.west = "grass"
         self.center = "road"
         
-class Tile15(Tile):
+class Tile15(Tile):#x9
     def __init__(self):
         super().__init__()
         self.north = "grass"
@@ -169,7 +170,7 @@ class Tile15(Tile):
         self.west = "road"
         self.center = "road"
 
-class Tile16(Tile):
+class Tile16(Tile):#x4
     def __init__(self):
         super().__init__()
         self.north = "grass"
@@ -178,7 +179,7 @@ class Tile16(Tile):
         self.west = "road"
         self.center = "start"
 
-class Tile17(Tile):
+class Tile17(Tile):#x1
     def __init__(self):
         super().__init__()
         self.north = "road"
@@ -186,3 +187,31 @@ class Tile17(Tile):
         self.south = "road"
         self.west = "road"
         self.center = "start"
+
+def revolverLosas():
+    # Crear la lista de losas según sus cantidades
+    losas = (
+        [Tile1() for _ in range(2)] +
+        [Tile2() for _ in range(1)] +
+        [Tile3() for _ in range(4)] +
+        [Tile4() for _ in range(5)] +
+        [Tile5() for _ in range(3)] +
+        [Tile6() for _ in range(3)] +
+        [Tile7() for _ in range(3)] +
+        [Tile8() for _ in range(3)] +
+        [Tile9() for _ in range(3)] +
+        [Tile10() for _ in range(5)] +
+        [Tile11() for _ in range(5)] +
+        [Tile12() for _ in range(4)] +
+        [Tile13() for _ in range(3)] +
+        [Tile14() for _ in range(8)] +
+        [Tile15() for _ in range(9)] +
+        [Tile16() for _ in range(4)] +
+        [Tile17() for _ in range(1)]
+    )
+    
+    # Mezclar aleatoriamente las losas
+    random.shuffle(losas)
+    
+    # Devolverlas como una lista (se puede usar como pila con .pop())
+    return losas
