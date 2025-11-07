@@ -56,7 +56,7 @@ class Tile2(Tile): #x1
 class Tile3(Tile):#x4
     def __init__(self):
         super().__init__()
-        self.north = "grass"
+        self.north = "city"
         self.east = "road"
         self.south = "grass"
         self.west = "road"
@@ -125,14 +125,7 @@ class Tile10(Tile):#x5
         self.west = "grass"
         self.center = "city"
 
-class Tile11(Tile):#x5
-    def __init__(self):
-        super().__init__()
-        self.north = "city"
-        self.east = "road"
-        self.south = "road"
-        self.west = "city"
-        self.center = "road"
+
         
 class Tile12(Tile):#x4
     def __init__(self):
@@ -201,7 +194,6 @@ def revolverLosas():
         [Tile8() for _ in range(3)] +
         [Tile9() for _ in range(3)] +
         [Tile10() for _ in range(5)] +
-        [Tile11() for _ in range(5)] +
         [Tile12() for _ in range(4)] +
         [Tile13() for _ in range(3)] +
         [Tile14() for _ in range(8)] +

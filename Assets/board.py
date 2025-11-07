@@ -53,7 +53,7 @@ class Board:
             # Verificar si se cerró un camino (la función devuelve (cerrado, visitados))
             camino_cerrado, camino_visitados, longitud = self.verificar_camino_cerrado(position)
             if camino_cerrado:
-                nuevos = camino_visitados - self.caminosCerrados
+                nuevos=camino_visitados-self.caminosCerrados
                 if nuevos:
                     self.caminosCerrados.update(camino_visitados)
                     if feed:
@@ -85,6 +85,19 @@ class Board:
           (cerrado: bool, visitados: set[(x,y)], longitud: int)
         """
 
+        # Hay problemas con las losas que en el centro tiene en start y al rededor tienen road
+        # Parece que no las detecta correctamente 
+        # Cuando en el mismo camino que ya tiene 2starts se extiende con otra casilla que tambien tiene start no contempla este como un camino cerrado 
+        # Ejemplo de fallo: se concetan tile 1 tile 13 y tile 16, en la primera lo acepta como conectado pero cuando se junta con la otra no
+        # Creo que tiene que ver con 
+
+        """ camino_cerrado, camino_visitados, longitud = self.verificar_camino_cerrado(position)
+            if camino_cerrado:
+                nuevos=camino_visitados-self.caminosCerrados
+                if nuevos:
+                    self.caminosCerrados.update(camino_visitados)"""
+        #
+        
 
         start_tile = self.get_tile(start_pos)
         if not start_tile:
@@ -92,9 +105,9 @@ class Board:
 
         dirs = {
            "north": (0, +1, "south"),
-                "east":  (+1, 0, "west"),
-        "south": (0, -1, "north"),
-        "west":  (-1, 0, "east"),
+            "east":  (+1, 0, "west"),
+            "south": (0, -1, "north"),
+            "west":  (-1, 0, "east"),
         }
 
         # BFS principal: construir el componente de road
@@ -165,8 +178,10 @@ class Board:
            de start_pos que sea "city").
          - Devolvemos la unión de tiles (pos) de todas las componentes cerradas que tocan start_pos.
         """
-        from collections import deque
+        
+       
 
+      
         start_tile = self.get_tile(start_pos)
         if not start_tile:
             return False, set(), 0
@@ -228,13 +243,13 @@ class Board:
                         if (nbr_pos, opp) not in component_nodes:
                             queue.append((nbr_pos, opp))
                         # si el vecino tiene center == 'city', conectar sus otras sides 'city' internamente
-                        if nbr.center == "city":
+                        if nbr.center in ("city", "start"):
                             for s2 in sides:
                                 if getattr(nbr, s2) == "city" and (nbr_pos, s2) not in component_nodes:
                                     queue.append((nbr_pos, s2))
 
                 # 2) conexiones internas del mismo tile: solo si center == 'city'
-                if t.center == "city":
+                if t.center in ("city", "start"):
                     for s2 in sides:
                         if getattr(t, s2) == "city" and (pos, s2) not in component_nodes:
                             queue.append((pos, s2))
