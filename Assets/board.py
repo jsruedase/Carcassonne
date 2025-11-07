@@ -51,121 +51,201 @@ class Board:
             self.grid[position] = tile
 
             # Verificar si se cerró un camino (la función devuelve (cerrado, visitados))
-            camino_cerrado, camino_visitados = self.verificar_camino_cerrado(position)
+            camino_cerrado, camino_visitados, longitud = self.verificar_camino_cerrado(position)
             if camino_cerrado:
-                # detectar si hay nuevas posiciones cerradas (evitar anuncios duplicados)
                 nuevos = camino_visitados - self.caminosCerrados
                 if nuevos:
                     self.caminosCerrados.update(camino_visitados)
                     if feed:
                         ejemplo = sorted(list(nuevos))[:6]
-                        feed.push(f"Camino cerrado! tamaño={len(camino_visitados)}. coords ejemplo: {ejemplo}")
+                        feed.push(
+                            f"Camino cerrado! longitud={longitud}, tamaño={len(camino_visitados)}. "
+                            f"coords ejemplo: {ejemplo}"
+                        )
 
+        
             # Verificar si se cerró un castillo/ciudad (devuelve (cerrado, visitados))
-            ciudad_cerrada, ciudad_visitados = self.verificar_castillo_cerrado(position)
-            if ciudad_cerrada:
+            cerrada, ciudad_visitados, tamaño = self.verificar_castillo_cerrado(position)
+            if cerrada:
                 nuevos = ciudad_visitados - self.ciudadesCerradas
                 if nuevos:
                     self.ciudadesCerradas.update(ciudad_visitados)
                     if feed:
                         ejemplo = sorted(list(nuevos))[:6]
-                        feed.push(f"Ciudad cerrada! tamaño={len(ciudad_visitados)}. coords ejemplo: {ejemplo}")
-
+                        feed.push(f"Ciudad cerrada! tamaño={tamaño}. coords ejemplo: {ejemplo}")
             return True
         return False
 
 
+
     def verificar_camino_cerrado(self, start_pos):
         """
-        Retorna (cerrado: bool, visitados: set).
-        Un camino está abierto si alguna arista 'road' del componente toca
-        una celda vacía o toca una losa cuyo lado opuesto NO es 'road'.
+        Detecta si el componente 'road' que toca start_pos conecta exactamente dos tiles con center == 'start'.
+        Devuelve:
+          (cerrado: bool, visitados: set[(x,y)], longitud: int)
         """
-        visitados = set()
-        cola = deque([start_pos])
-        abierto = False
 
-        while cola:
-            pos = cola.popleft()
+
+        start_tile = self.get_tile(start_pos)
+        if not start_tile:
+            return False, set(), 0
+
+        dirs = {
+           "north": (0, +1, "south"),
+                "east":  (+1, 0, "west"),
+        "south": (0, -1, "north"),
+        "west":  (-1, 0, "east"),
+        }
+
+        # BFS principal: construir el componente de road
+        q = deque([start_pos])
+        visitados = set()
+
+        while q:
+            pos = q.popleft()
             if pos in visitados:
-                continue
+               continue
             visitados.add(pos)
 
-            tile = self.grid.get(pos)
-            if not tile:
+            t = self.get_tile(pos)
+            if not t:
                 continue
 
-            x, y = pos
-            lados = {
-                "north": (x, y + 1, "south"),
-                "east":  (x + 1, y, "west"),
-                "south": (x, y - 1, "north"),
-                "west":  (x - 1, y, "east"),
-            }
+            for side, (dx, dy, opp) in dirs.items():
+                if getattr(t, side) != "road":
+                    continue
+                nbr_pos = (pos[0] + dx, pos[1] + dy)
+                nbr = self.get_tile(nbr_pos)
+                if not nbr:
+                    continue
+                if getattr(nbr, opp) != "road":
+                    continue
+                if nbr_pos not in visitados:
+                    q.append(nbr_pos)
 
-            for lado, (nx, ny, lado_opuesto) in lados.items():
-                if getattr(tile, lado) == "road":
-                    vecino = self.grid.get((nx, ny))
-                    if not vecino:
-                        # Camino que termina sin conectar: no cerrado
-                        abierto = True
-                    else:
-                        # Si el vecino NO tiene 'road' en la cara opuesta, es una arista abierta
-                        if getattr(vecino, lado_opuesto) != "road":
-                            abierto = True
-                        else:
-                            # vecino con 'road' en la cara opuesta -> seguir explorando
-                            if (nx, ny) not in visitados:
-                                cola.append((nx, ny))
+        # Buscar losas 'start' en el componente
+        starts = [p for p in visitados if self.get_tile(p).center == "start"]
 
-        cerrado = not abierto
-        if cerrado:
-            self.caminosCerrados.update(visitados)
-        return cerrado, visitados
+        if len(starts) == 2:
+        # BFS para encontrar la distancia mínima entre los dos starts
+            q2 = deque([(starts[0], 0)])
+            seen = {starts[0]}
+            while q2:
+                pos, dist = q2.popleft()
+                if pos == starts[1]:
+                    return True, visitados, dist
+                t = self.get_tile(pos)
+                for side, (dx, dy, opp) in dirs.items():
+                    if getattr(t, side) != "road":
+                        continue
+                    nbr_pos = (pos[0] + dx, pos[1] + dy)
+                    nbr = self.get_tile(nbr_pos)
+                    if nbr and getattr(nbr, opp) == "road" and nbr_pos not in seen:
+                        seen.add(nbr_pos)
+                        q2.append((nbr_pos, dist + 1))
+
+        return False, set(), 0
+
+
 
     def verificar_castillo_cerrado(self, start_pos):
         """
-        Retorna (cerrado: bool, visitados: set).
-        Una ciudad está abierta si alguna arista 'city' del componente toca
-        una celda vacía o una losa que no tiene 'city' en la cara opuesta.
+        BFS a nivel de nodos (pos, side) para ciudades.
+        Retorna (any_closed: bool, closed_tiles_union: set[pos], tamaño_total: int)
+
+        Reglas y puntualizaciones (compatibles con tu set de tiles):
+         - Un nodo = (pos, side) donde getattr(tile, side) == "city".
+         - Conexión entre nodos:
+             * Entre tiles: (pos, side) <-> (nbr_pos, opp) si ambos lados son "city".
+             * Dentro de la misma losa: si tile.center == "city", entonces todas las sides "city"
+               de esa losa están conectadas internamente.
+         - Una componente está "abierta" si algún nodo apunta a vacío o a vecino cuyo lado opuesto
+           NO sea "city".
+         - Se exploran sólo las componentes que tocan start_pos (es decir, comenzamos BFS por cada side
+           de start_pos que sea "city").
+         - Devolvemos la unión de tiles (pos) de todas las componentes cerradas que tocan start_pos.
         """
-        visitados = set()
-        cola = deque([start_pos])
-        abierto = False
+        from collections import deque
 
-        while cola:
-            pos = cola.popleft()
-            if pos in visitados:
+        start_tile = self.get_tile(start_pos)
+        if not start_tile:
+            return False, set(), 0
+
+        sides = ("north", "east", "south", "west")
+        # Considerar cualquier side que sea 'city' — aunque center != 'city'
+        start_sides = [s for s in sides if getattr(start_tile, s) == "city"]
+        if not start_sides:
+            return False, set(), 0
+
+        dirs = {
+            "north": (0, +1, "south"),
+            "east":  (+1, 0, "west"),
+            "south": (0, -1, "north"),
+            "west":  (-1, 0, "east"),
+        }
+
+        visited_nodes = set()       # (pos, side) ya procesados globalmente
+        closed_components_tiles_union = set()
+        any_closed = False
+
+        for side in start_sides:
+            start_node = (start_pos, side)
+            if start_node in visited_nodes:
                 continue
-            visitados.add(pos)
 
-            tile = self.grid.get(pos)
-            if not tile:
-                continue
+            queue = deque([start_node])
+            component_nodes = set()
+            component_tiles = set()
+            abierto = False
 
-            x, y = pos
-            lados = {
-                "north": (x, y + 1, "south"),
-                "east":  (x + 1, y, "west"),
-                "south": (x, y - 1, "north"),
-                "west":  (x - 1, y, "east"),
-            }
+            while queue:
+                pos, s = queue.popleft()
+                if (pos, s) in component_nodes:
+                    continue
+                component_nodes.add((pos, s))
 
-            for lado, (nx, ny, lado_opuesto) in lados.items():
-                if getattr(tile, lado) == "city":
-                    vecino = self.grid.get((nx, ny))
-                    if not vecino:
-                        # borde sin losa vecina
+                t = self.get_tile(pos)
+                if not t:
+                    # apuntaba a vacío -> abierto
+                    abierto = True
+                    continue
+
+                # registrar tile
+                component_tiles.add(pos)
+
+                # 1) Conexión hacia el vecino a través del lado s
+                dx, dy, opp = dirs[s]
+                nbr_pos = (pos[0] + dx, pos[1] + dy)
+                nbr = self.get_tile(nbr_pos)
+                if not nbr:
+                    abierto = True
+                else:
+                    if getattr(nbr, opp) != "city":
+                        # vecino existe pero su lado opuesto no es city -> abierto
                         abierto = True
                     else:
-                        vecino_feature = getattr(vecino, lado_opuesto)
-                        if vecino_feature != "city":
-                            # vecino no conecta correctamente
-                            abierto = True
-                        else:
-                            # vecino conecta: explorar
-                            if (nx, ny) not in visitados:
-                                cola.append((nx, ny))
+                        # vecino y su lado opuesto son "city" -> conectar ese nodo
+                        if (nbr_pos, opp) not in component_nodes:
+                            queue.append((nbr_pos, opp))
+                        # si el vecino tiene center == 'city', conectar sus otras sides 'city' internamente
+                        if nbr.center == "city":
+                            for s2 in sides:
+                                if getattr(nbr, s2) == "city" and (nbr_pos, s2) not in component_nodes:
+                                    queue.append((nbr_pos, s2))
 
-        cerrado = not abierto
-        return cerrado, visitados
+                # 2) conexiones internas del mismo tile: solo si center == 'city'
+                if t.center == "city":
+                    for s2 in sides:
+                        if getattr(t, s2) == "city" and (pos, s2) not in component_nodes:
+                            queue.append((pos, s2))
+
+            # marcar nodos de esta componente como visitados globalmente
+            visited_nodes.update(component_nodes)
+            if not abierto:
+                any_closed = True
+                closed_components_tiles_union.update(component_tiles)
+
+        return any_closed, closed_components_tiles_union, len(closed_components_tiles_union)
+
+
+

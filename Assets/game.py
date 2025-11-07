@@ -11,6 +11,24 @@ SCREEN_W = 1200
 SCREEN_H = 800
 IMAGES_FOLDER = os.path.join(os.path.dirname(__file__), "images")
 
+def draw_wrapped_text(surface, text, font, color, x, y, max_width, line_height):
+	words = text.split(' ')
+	lines = []
+	current_line = ""
+	for word in words:
+		test_line = current_line + word + " "
+		if font.size(test_line)[0] <= max_width:
+			current_line = test_line
+		else:
+			lines.append(current_line.strip())
+			current_line = word + " "
+	if current_line:
+		lines.append(current_line.strip())
+	for i, line in enumerate(lines):
+		txt_surf = font.render(line, True, color)
+		surface.blit(txt_surf, (x, y + i * line_height))
+
+
 def load_tile_images():
     images = {}
     for i in range(1, 18):
@@ -91,6 +109,7 @@ def main():
 
     feed = MessageFeed()
     announcement = ""  # mensaje temporal en pantalla
+    announcement_timer = 0
 
     center_pixel = [SCREEN_W // 2 - 200, SCREEN_H // 2]
     cell_size = TILE_PIX
@@ -133,13 +152,24 @@ def main():
                     gx, gy = pixel_to_grid(mx, my, center_pixel, cell_size)
                     if current_tile and board.place_tile(current_tile, (gx, gy)):
                         feed.push(f"Colocada {type(current_tile).__name__} en {gx,gy}")
-                        if board.verificar_camino_cerrado((gx, gy)):
-                            announcement = "¡Camino cerrado!"
-                            feed.push("Camino cerrado detectado")
-                        cerrada, _ = board.verificar_castillo_cerrado((gx, gy))
+
+
+                        cerrado, visitados, longitud = board.verificar_camino_cerrado((gx, gy))
+                        if cerrado:
+                            announcement = f"¡Camino cerrado! Longitud: {longitud}"
+                            announcement_timer = 120
+                            feed.push(f"Camino cerrado detectado (longitud={longitud})")
+
+
+
+                        cerrada, visitados, tamaño = board.verificar_castillo_cerrado((gx, gy))
                         if cerrada:
-                            announcement = "¡Ciudad cerrada!"
-                            feed.push("Ciudad cerrada detectada")
+                            announcement = f"¡Ciudad cerrada! Tamaño: {tamaño}"
+                            announcement_timer = 120  
+                            feed.push(f"Ciudad cerrada detectada (tamaño={tamaño})")
+
+
+
                         current_tile = deck.pop() if deck else None
                     else:
                         feed.push("Movimiento inválido")
@@ -193,9 +223,9 @@ def main():
             draw_tile(screen, current_tile, images, (ui_x+40, ui_y+30), TILE_PIX)
 
         # Anuncio simple
+        # 
         if announcement:
-            text_surf = big_font.render(announcement, True, (200, 50, 50))
-            screen.blit(text_surf, (ui_x+30, ui_y+160))
+            draw_wrapped_text(screen,announcement, big_font,(200, 50, 50),ui_x + 30, ui_y + 160,max_width=200,line_height=32 )
 
         # Instrucciones
         instrucciones = [
@@ -214,6 +244,12 @@ def main():
 
         # Feed de mensajes
         feed.draw(screen, ui_x+10, ui_y + 450, font)
+
+        # Actualizar temporizador del anuncio
+        if announcement_timer > 0:
+            announcement_timer -= 1
+        else:
+            announcement = ""
 
         pygame.display.flip()
         clock.tick(FPS)
