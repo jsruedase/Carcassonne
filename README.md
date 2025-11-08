@@ -37,6 +37,7 @@ Donde:
 - M = Monasterio
 
 Cabe resaltar que las representaciones mostradas serían las de las siguientes losetas respectivamente:
+
 <img width="91" height="89" alt="image" src="https://github.com/user-attachments/assets/50568bd4-1d9b-494a-8428-53bef2fcf7f4" />
 <img width="90" height="90" alt="image" src="https://github.com/user-attachments/assets/59e4c2da-34a8-4a58-b442-e287a9da6bb5" />
 <img width="90" height="89" alt="image" src="https://github.com/user-attachments/assets/f3725423-2dee-406f-8353-0937994f7e16" />
