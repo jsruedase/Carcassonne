@@ -5,7 +5,7 @@
 Carcassonne es un juego de mesa de estrategia, donde los jugadores construyen un mapa usando losetas, en las cuales estan representadas caminos, pueblos, ciudades o monasterios. Cada jugador busca, colocando losetas, cerrar caminos o ciudades para ganar puntos. Cabe resaltar que estas losetas se deben conectar siguiendo una lógica, las losetas contiguas a una loseta deben mantener la lógica del mundo, esto es:
 - No colocar contiguamente una loseta de ciudad al lado de una de camino, haciendo que los caminos solo se puedan conectar con otros caminos, y las ciudades con otras ciudades.
 
-Este juego puede entenderse como un problema de busqueda, donde cada movimineto hecho afecta el mundo, siendo asi, el colocamineto de las losetas es fundemental para maximizar la puntuación del jugador, por esta razon la implementación de algoritmos como **Minimax** y **Expectimax** pueden ayudar a modelar la mejor manera en la que dos jugadores juegues Carcassonne.
+Este juego puede entenderse como un problema de busqueda, donde cada movimiento hecho afecta el mundo, siendo así, el colocamineto de las losetas es fundemental para maximizar la puntuación del jugador, por esta razon la implementación de algoritmos como **Minimax** y **Expectimax** pueden ayudar a modelar la mejor manera en la que dos jugadores juegues Carcassonne.
 
 Este proyecto, como se mencionó anteriormente tiene como objetivo mostrar el uso de los algoritmos en el juego de Carcassonne, encontrando la mejor manera de jugar el juego, estimando cual puede ser la siguiente loseta que salga y ya teniendo una loseta cual es la mejor manera de colocarla para maximizar el puntaje de un jugador al mismo tiempo que intetna minimizar el del rival.
 
