@@ -77,88 +77,94 @@ class Board:
         return False
 
 
-
     def verificar_camino_cerrado(self, start_pos):
         """
-        Detecta si el componente 'road' que toca start_pos conecta exactamente dos tiles con center == 'start'.
-        Devuelve:
-          (cerrado: bool, visitados: set[(x,y)], longitud: int)
+        Detecta si al menos uno de los caminos (componentes de 'road')
+        que salen de start_pos se ha cerrado completamente.
+
+        Retorna:
+          (hay_cierre: bool, tiles_visitados: set[(x,y)], longitud_total: int)
         """
-
-        # Hay problemas con las losas que en el centro tiene en start y al rededor tienen road
-        # Parece que no las detecta correctamente 
-        # Cuando en el mismo camino que ya tiene 2starts se extiende con otra casilla que tambien tiene start no contempla este como un camino cerrado 
-        # Ejemplo de fallo: se concetan tile 1 tile 13 y tile 16, en la primera lo acepta como conectado pero cuando se junta con la otra no
-        # Creo que tiene que ver con 
-
-        """ camino_cerrado, camino_visitados, longitud = self.verificar_camino_cerrado(position)
-            if camino_cerrado:
-                nuevos=camino_visitados-self.caminosCerrados
-                if nuevos:
-                    self.caminosCerrados.update(camino_visitados)"""
-        #
-        
 
         start_tile = self.get_tile(start_pos)
         if not start_tile:
             return False, set(), 0
 
         dirs = {
-           "north": (0, +1, "south"),
+            "north": (0, +1, "south"),
             "east":  (+1, 0, "west"),
             "south": (0, -1, "north"),
             "west":  (-1, 0, "east"),
         }
 
-        # BFS principal: construir el componente de road
-        q = deque([start_pos])
-        visitados = set()
+        # Lados del start_pos que son caminos
+        road_sides = [s for s in dirs if getattr(start_tile, s) == "road"]
+        if not road_sides:
+            return False, set(), 0
 
-        while q:
-            pos = q.popleft()
-            if pos in visitados:
-               continue
-            visitados.add(pos)
+        cerrados = []          # lista de componentes cerrados
+        tiles_usados = set()   # tiles ya explorados 
 
-            t = self.get_tile(pos)
-            if not t:
+        # Exploramos cada camino por separado (por lado)
+        for side in road_sides:
+            nodo_inicial = (start_pos, side)
+            if nodo_inicial in tiles_usados:
                 continue
 
-            for side, (dx, dy, opp) in dirs.items():
-                if getattr(t, side) != "road":
+            q = deque([nodo_inicial])
+            visit_nodes = set()
+            visit_tiles = set()
+            abierto = False
+            longitud = 0
+
+            while q:
+                (pos, s) = q.popleft()
+                if (pos, s) in visit_nodes:
                     continue
+                visit_nodes.add((pos, s))
+                visit_tiles.add(pos)
+
+                t = self.get_tile(pos)
+                if not t:
+                    abierto = True
+                    continue
+
+                dx, dy, opp = dirs[s]
                 nbr_pos = (pos[0] + dx, pos[1] + dy)
                 nbr = self.get_tile(nbr_pos)
+
                 if not nbr:
-                    continue
-                if getattr(nbr, opp) != "road":
-                    continue
-                if nbr_pos not in visitados:
-                    q.append(nbr_pos)
+                    abierto = True
+                else:
+                    if getattr(nbr, opp) != "road":
+                        abierto = True
+                    else:
+                        # conectar al siguiente segmento
+                        for next_side, (dx2, dy2, opp2) in dirs.items():
+                            if getattr(nbr, next_side) == "road":
+                                # si el centro del tile vecino es "start", no conecta entre lados
+                                if nbr.center == "start" and next_side != opp:
+                                    continue
+                                q.append((nbr_pos, next_side))
 
-        # Buscar losas 'start' en el componente
-        starts = [p for p in visitados if self.get_tile(p).center == "start"]
+                # Si el centro de este tile es "road" y no "start", puede conectar entre lados
+                if t.center == "road":
+                    for s2 in dirs:
+                        if getattr(t, s2) == "road" and (pos, s2) not in visit_nodes:
+                            q.append((pos, s2))
 
-        if len(starts) == 2:
-        # BFS para encontrar la distancia mínima entre los dos starts
-            q2 = deque([(starts[0], 0)])
-            seen = {starts[0]}
-            while q2:
-                pos, dist = q2.popleft()
-                if pos == starts[1]:
-                    return True, visitados, dist
-                t = self.get_tile(pos)
-                for side, (dx, dy, opp) in dirs.items():
-                    if getattr(t, side) != "road":
-                        continue
-                    nbr_pos = (pos[0] + dx, pos[1] + dy)
-                    nbr = self.get_tile(nbr_pos)
-                    if nbr and getattr(nbr, opp) == "road" and nbr_pos not in seen:
-                        seen.add(nbr_pos)
-                        q2.append((nbr_pos, dist + 1))
+            tiles_usados.update(visit_nodes)
+            if not abierto and visit_tiles:
+                longitud = len(visit_tiles)
+                cerrados.append((visit_tiles, longitud))
+
+        if cerrados:
+            # Si hay al menos un camino cerrado, devolvemos la unión de tiles y la longitud total
+            union_tiles = set().union(*(tiles for tiles, _ in cerrados))
+            total_len = sum(l for _, l in cerrados)
+            return True, union_tiles, total_len
 
         return False, set(), 0
-
 
 
     def verificar_castillo_cerrado(self, start_pos):
