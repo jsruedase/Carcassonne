@@ -34,8 +34,7 @@ Adicionalmente, estas losetas van a tener una representación en el computador, 
 Donde:
 - C = Ciudad
 - R = Camino
-- T = Pueblo
-- M = Monasterio
+- S = Start, puede ser un pueblo o un monasterio
 
 Cabe resaltar que las representaciones mostradas serían las de las siguientes losetas respectivamente:
 
@@ -56,7 +55,7 @@ Teniendo esto en cuenta, cada jugador puede decidir colocar su loseta de alguna 
 1. **Determinar si se cerró alguna ciudad o camino:**
     - Fundamental para poder determinar en que momento se ganan puntos.
     - En el caso de las ciudades, se revisará que, para que una ciudad se considere completa, la ciudad está rodeada por muros.
-    - En el caso de los caminos, se revisará que, para que un camino se consideré completo, el camino salga de un pueblo, una ciudad o un monasterio y llegue a otro pueblo, ciudad o monasterio, haciendo que el camino tenga inicio y final.
+    - En el caso de los caminos, se revisará que, para que un camino se consideré completo, el camino salga de un start y llegue a otro start, haciendo que el camino tenga inicio y final.
 2. **Habiendo cerrado ciudad o camino, otorgar una recompensa:**
     - Si se cerró una ciudad, se otorgaran dos puntos por cada loseta usada para cerrar la ciudad.
     - Si se cerró un camino, se otorgara un punto por cada loseta usada para cerrar el camino.
@@ -99,7 +98,7 @@ En caso del tercer objetivo, la prueba de objetivo sería:
 Dicho de otra forma, no puedo seguir expandiendo el árbol.
 
 En caso del primer objetivo, la prueba de objetivo sería: 
-Revisar si al entrar al estado actual se cerró algún camino o ciudad, esto es: Para los caminos, todo camino está conectado a otro, hasta encontrar uno conectado a alguna ciudad, pueblo o monasterio. Para las ciudades, toda loseta con una ciudad está conectada entre si, esto es si no hay algún lado abierto.
+Revisar si al entrar al estado actual se cerró algún camino o ciudad, esto es: Para los caminos, todo camino está conectado a otro, hasta encontrar uno conectado a algún start. Para las ciudades, toda loseta con una ciudad está conectada entre si, esto es si no hay algún lado abierto.
   
 
 
