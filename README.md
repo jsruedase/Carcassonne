@@ -23,6 +23,7 @@ La motivación práctica es descubrir cómo, al modelar este juego, se pueden es
 ## 2. Definición del problema
 
 Se plantea una cuadricula, sobre la cual se pondrán las losetas, para esto se tendrá una loseta inicial, la cuál será: 
+
 <img width="90" height="90" alt="image" src="https://github.com/user-attachments/assets/a7e50bb3-4d34-4bd2-9628-d7f0278bcdcc" />
 
 Se escoge esta loseta dado que, independientemente de cuál loseta salga, siempre hay una jugada posible.
