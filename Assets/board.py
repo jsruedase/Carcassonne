@@ -1,5 +1,7 @@
 from collections import deque
-import tiles
+from Assets import tiles
+from Assets import utils
+
 
 class Board:
     def __init__(self):
@@ -268,5 +270,79 @@ class Board:
 
         return any_closed, closed_components_tiles_union, len(closed_components_tiles_union)
 
+    def getLegalPlacements(self, tile: tiles.Tile) -> None:
+                positions = []
+                for position, placed_tile in self.grid.items():
+                    x, y = position
+                    adjacent_positions = {
+                        (x, y + 1): 'north',
+                        (x + 1, y): 'east',
+                        (x, y - 1): 'south',
+                        (x - 1, y): 'west',
+                    }
+                    for pos in adjacent_positions.keys():
+                        can, orientations = self.can_place_tile_in(tile, pos)
+                        if can:
+                            for orientation in orientations:
+                                positions.append((pos, orientation))
+            
+                return positions
 
+    def can_place_tile_in(self, tile: tiles.Tile, position: tuple[int, int]):
+        """ Devuelve True si se puede colocar la ficha en la posición dada y todas las orientaciones posibles."""
 
+        if self.grid.get(position, None):
+            return False, []
+
+        x, y = position
+        adjacent_positions = {
+            (x, y + 1): 'north',
+            (x + 1, y): 'east',
+            (x, y - 1): 'south',
+            (x - 1, y): 'west',
+        }
+        valid = False
+        rotations = []
+        for i in range(4):
+            matches = 0
+            for adj_pos, direction in adjacent_positions.items():
+                if adj_pos in self.grid:
+                    placed_tile = self.get_tile(adj_pos)
+                    if direction == "north":
+                        if placed_tile.south == tile.north:
+                            matches += 1
+                            
+                    if direction == "east":
+                        if placed_tile.west == tile.east:
+                            matches += 1
+                            
+                    if direction == "south":
+                        if placed_tile.north == tile.south:
+                            matches += 1
+                            
+                    if direction == "west":
+                        if placed_tile.east == tile.west:
+                            matches += 1
+                else:
+                    matches += 1
+            if matches == 4:
+                tile.reset_orientation()
+                valid = True
+                rotations.append(90*i)
+            else:
+                tile.rotate()
+        tile.reset_orientation()
+        return valid, rotations
+
+    def calculateScore(self):
+        score = len(self.grid)  # 1 punto por cada losa colocada
+        for road in self.caminosCerrados:
+            score += len(road)
+        for city in self.ciudadesCerradas:
+            score += 2 * len(city)
+        return score
+    
+if __name__ == "__main__":
+    board = Board()
+    print(board.getLegalPlacements(tiles.Tile7()))
+    #board.place_tile(tiles.Tile7(), (0, 1))

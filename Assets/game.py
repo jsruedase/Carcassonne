@@ -128,6 +128,8 @@ def main():
                 elif ev.key == pygame.K_r:
                     if current_tile:
                         current_tile.rotate()
+                elif ev.key == pygame.K_SPACE:
+                    print(board.calculateScore())
                 elif ev.key == pygame.K_n:
                     if deck:
                         current_tile = deck.pop()

@@ -102,8 +102,17 @@ Revisar si al entrar al estado actual se cerró algún camino o ciudad, esto es:
   
 
 
+### Cómo correr:
 
+Desde la carpeta Carcassonne:
 
+Para la simulación con interfaz gráfica
+```
+py -m Game.simmulation 
+```
 
+Para un agente automático:
 
-This repository implements a simplification of the Carcassonne game with the objectives of applying minimax and expectimax algorithms for multiagents. It's the second project of the course Introduction to AI at UNAL.
+```
+py -m Game.carcassone 
+```

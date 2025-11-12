@@ -18,6 +18,10 @@ class Stack:
     def isEmpty(self):
         "Returns true if the stack is empty"
         return len(self.list) == 0
+    
+    def peek(self):
+        "Returns the most recently pushed item from the stack. Does not remove the item."
+        return self.list[-1]
 
 class Queue:
     "A container with a first-in-first-out (FIFO) queuing policy."
