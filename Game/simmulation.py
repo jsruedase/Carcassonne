@@ -294,7 +294,7 @@ def main():
             clock.tick(FPS)
         else:
             time.sleep(1)  # pequeña pausa para no saturar la CPU
-			if len(deck) == 0:
+            if len(deck) == 0:
                 running = False
                 break
             current_turn = game.data.data.turn
