@@ -105,7 +105,7 @@ def main():
     pygame.display.set_caption("Carcassonne básico")
     clock = pygame.time.Clock()
     font = pygame.font.SysFont(None, 22)
-    big_font = pygame.font.SysFont(None, 36)
+    big_font = pygame.font.SysFont(None, 30)
 
     images = load_tile_images()
     
@@ -246,6 +246,17 @@ def main():
             ui_y = 40
             pygame.draw.rect(screen, (230,230,230), (ui_x-10, ui_y-10, 240, 700))
 
+			# Mostrar turno actual y puntajes
+            turn_text = big_font.render(f"Jugador actual: {game.data.data.turn}", True, (0, 0, 0))
+            screen.blit(turn_text, (ui_x + 10, ui_y+230))
+
+            scores = game.data.data.scores
+            for i, score in enumerate(scores):
+                color = (0, 100, 200) if i == game.data.data.turn else (0, 0, 0)
+                score_text = font.render(f"Jugador {i}: {score} pts", True, color)
+                screen.blit(score_text, (ui_x + 10, ui_y + 270 + i * 25))
+
+
             # Losa actual
             if current_tile:
                 draw_tile(screen, current_tile, images, (ui_x+40, ui_y+30), TILE_PIX)
@@ -253,7 +264,7 @@ def main():
             # Anuncio simple
             # 
             if announcement:
-                draw_wrapped_text(screen,announcement, big_font,(200, 50, 50),ui_x + 30, ui_y + 160,max_width=200,line_height=32 )
+                draw_wrapped_text(screen,announcement, big_font,(200, 50, 50),ui_x + 30, ui_y + 160,max_width=200,line_height=25 )
 
             # Instrucciones
             instrucciones = [
@@ -268,10 +279,10 @@ def main():
             ]
             for i, line in enumerate(instrucciones):
                 txt = font.render(line, True, (0, 0, 0))
-                screen.blit(txt, (ui_x+10, ui_y+220 + i * 22))
+                screen.blit(txt, (ui_x+10, ui_y+340 + i * 22))
 
             # Feed de mensajes
-            feed.draw(screen, ui_x+10, ui_y + 450, font)
+            feed.draw(screen, ui_x+10, ui_y + 550, font)
 
             # Actualizar temporizador del anuncio
             if announcement_timer > 0:
@@ -283,6 +294,9 @@ def main():
             clock.tick(FPS)
         else:
             time.sleep(1)  # pequeña pausa para no saturar la CPU
+			if len(deck) == 0:
+                running = False
+                break
             current_turn = game.data.data.turn
             agent = game.agents[current_turn]
             action = agent.getAction(game.data)
@@ -291,7 +305,8 @@ def main():
             deck = game.data.data.tile_stack
             current_tile = game.data.data.current_tile
 
-    print(game.getWinner())
+    winners, score = game.getWinner()
+    print(f"\n Game over! Winner(s): {winners} with {score} points.")
     
     pygame.quit()
     sys.exit()
