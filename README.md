@@ -29,7 +29,8 @@ Se plantea una cuadricula, sobre la cual se pondrán las losetas, para esto se t
 Se escoge esta loseta dado que, independientemente de cuál loseta salga, siempre hay una jugada posible.
 
 Adicionalmente, estas losetas van a tener una representación en el computador, la cual se verá:
-<img width="1873" height="494" alt="image" src="https://github.com/user-attachments/assets/f398128f-8ba6-4d3d-b8d0-e139f220c00d" />
+<img width="1873" height="503" alt="image" src="https://github.com/user-attachments/assets/01980c21-3042-4c17-bd0f-246004bc3d79" />
+
 
 Donde:
 - C = Ciudad
