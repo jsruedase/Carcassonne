@@ -280,4 +280,6 @@ if __name__ == "__main__":
         print(f"Player {current_turn} chose action: {action}")
         game.playTurn(current_turn, action)
         print(f"Scores: {game.data.data.scores}")
+    winners, score = game.getWinner()
+    print(f"\n Game over! Winner(s): {winners} with {score} points.")
     
