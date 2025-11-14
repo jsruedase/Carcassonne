@@ -104,6 +104,7 @@ Revisar si al entrar al estado actual se cerró algún camino o ciudad, esto es:
 ---
 
 ## 7. Ejemplo de juego
+<img width="1189" height="816" alt="EjemploJuego" src="https://github.com/user-attachments/assets/105d8e5f-b32c-4c5e-8cf9-e040cc7d535a" />
 
 
 ---
