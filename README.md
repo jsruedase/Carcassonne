@@ -112,6 +112,19 @@ Revisar si al entrar al estado actual se cerró algún camino o ciudad, esto es:
 
 ## 8. Resultados Random vs Expectimax y Expectimax vs Expectimax
 
+Luego de 10 partidas efectuando Expextimax vs Expectimax:
+
+<img width="608" height="188" alt="image" src="https://github.com/user-attachments/assets/e4214b34-f700-4905-b2e0-dd8eff669db8" />
+
+
+Claramente el jugador [0] jugó mejor la mayoría de las veces.
+
+Luego de 8 partidas efectando Random vs Expectimax:
+
+<img width="522" height="152" alt="image" src="https://github.com/user-attachments/assets/f7c006df-2e6e-44bc-8239-b5c4c9d18077" />
+
+De donde claramente se ve que el jugador [1] es muy superior al rival, ganando todas las partidas
+
 ---
 
 ## 9. Conclusiones
