@@ -119,9 +119,10 @@ Luego de 10 partidas efectuando Expextimax vs Expectimax:
 
 Claramente el jugador [0] jugó mejor la mayoría de las veces.
 
-Luego de 8 partidas efectando Random vs Expectimax:
+Luego de 10 partidas efectando Random vs Expectimax:
 
-<img width="522" height="152" alt="image" src="https://github.com/user-attachments/assets/f7c006df-2e6e-44bc-8239-b5c4c9d18077" />
+<img width="524" height="189" alt="image" src="https://github.com/user-attachments/assets/3317ea11-db80-4372-9d7e-5f2402d2eca6" />
+
 
 De donde claramente se ve que el jugador [1] es muy superior al rival, ganando todas las partidas
 
