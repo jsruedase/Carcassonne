@@ -293,7 +293,7 @@ def main():
             pygame.display.flip()
             clock.tick(FPS)
         else:
-            time.sleep(1)  # pequeña pausa para no saturar la CPU
+            time.sleep(1)  # pequeña pausa para apreciar el turno del otro agente
             if len(deck) == 0:
                 running = False
                 break

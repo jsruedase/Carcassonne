@@ -7,7 +7,6 @@ class Tile:
         self.south = None
         self.west = None
         self.center = None
-        # agregar si ya hace parte de un camino cerrado y cual jugador la puso self.jugador self.vaminoCerrado
         self.orientation = 0
 
     def rotate(self):

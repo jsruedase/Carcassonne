@@ -271,22 +271,25 @@ class Board:
         return any_closed, closed_components_tiles_union, len(closed_components_tiles_union)
 
     def getLegalPlacements(self, tile: tiles.Tile) -> None:
-                positions = []
-                for position, placed_tile in self.grid.items():
-                    x, y = position
-                    adjacent_positions = {
-                        (x, y + 1): 'north',
-                        (x + 1, y): 'east',
-                        (x, y - 1): 'south',
-                        (x - 1, y): 'west',
-                    }
-                    for pos in adjacent_positions.keys():
-                        can, orientations = self.can_place_tile_in(tile, pos)
-                        if can:
-                            for orientation in orientations:
-                                positions.append((pos, orientation))
-            
-                return positions
+        """ 
+        Devuelve una lista de posiciones y orientaciones legales donde se puede colocar la losa dada.
+        """
+        positions = []
+        for position, placed_tile in self.grid.items():
+            x, y = position
+            adjacent_positions = {
+                (x, y + 1): 'north',
+                (x + 1, y): 'east',
+                (x, y - 1): 'south',
+                (x - 1, y): 'west',
+            }
+            for pos in adjacent_positions.keys():
+                can, orientations = self.can_place_tile_in(tile, pos)
+                if can:
+                    for orientation in orientations:
+                        positions.append((pos, orientation))
+    
+        return positions
 
     def can_place_tile_in(self, tile: tiles.Tile, position: tuple[int, int]):
         """ Devuelve True si se puede colocar la ficha en la posición dada y todas las orientaciones posibles."""
@@ -335,6 +338,10 @@ class Board:
         return valid, rotations
 
     def calculateScore(self):
+        """ 
+        Generamos un valor de puntuación basado en las losas colocadas y las estructuras cerradas. Da más prioridad
+        a cerrar ciudades que caminos.
+        """
         score = len(self.grid)  # 1 punto por cada losa colocada
         for road in self.caminosCerrados:
             score += len(road)

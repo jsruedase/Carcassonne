@@ -2,8 +2,12 @@ from Assets import board
 from Assets import tiles
 
 import copy
+import random
 
 class GameStateData:
+    """ 
+    Cada GameState tiene información del tablero, el puntaje de los jugadores, las piezas restantes, el turno actual y la pieza al tope de la pila.
+    """
     
     def __init__(self, prev_state: 'GameStateData' = None):
         if prev_state is not None:
@@ -31,7 +35,7 @@ class GameStateData:
     
 class GameState:
     """ 
-    Reportará el número de caminos y ciudades cerradas y abiertas, configuraciones de agentes y cambio de puntuaciones
+    Maneja el estado actual del juego.
     """
     def __init__(self, prev_state: "GameState"= None):
         if prev_state is not None:
@@ -40,18 +44,29 @@ class GameState:
             self.data = GameStateData()
     
     def initialize(self, num_players: int, tile_stack: list):
+        """
+        Inicializa el estado del juego con el número de jugadores y la pila de piezas dada. 
+        """
+        
         self.data.initialize(num_players, tile_stack)
     
     def getLegalActions(self, turn):
+        """
+        Devuelve las acciones legales para el jugador actual. Si no hat posiciones válidas 
+        para colocar la pieza actual, devuelve "pass". Si no hay piezas restantes, devuelve "exit".
+        """
         if self.tilesLeft() == 0:
             return "exit"
         
         legal = self.data.board.getLegalPlacements(self.data.current_tile)
         return legal if legal != [] else "pass"
 
-    
-        
     def generateSuccessor(self, turn, action):
+        """ 
+        Devuelve el estado sucesor después de que el jugador actual realice la acción dada. 
+        La acción puede ser "pass" o una tupla ((x, y), orientation) para colocar la pieza en la posición (x, y) con la orientación dada.
+        Si coloca una pieza se le otorgan puntos por losas colocadas y estructuras cerradas.
+        """
         if action == "exit":
             raise Exception("EXIT")
         
@@ -91,6 +106,9 @@ class GameState:
             return successor
     
     def getScore(self):
+        """
+        Devuelve el puntaje calculado por la configuración actual del tablero.
+        """
         return self.data.board.calculateScore()
     
     def tilesLeft(self):
@@ -98,28 +116,6 @@ class GameState:
     
     def getNumAgents(self):
         return len(self.data.scores)
-
-    # @property
-    # def turn(self):
-    #     return self.data.turn
-
-    # @property
-    # def scores(self):
-    #     return self.data.scores
-    
-    # # @property
-    # # def board(self):
-    # #     return self.data.board
-    
-    # @property
-    # def tile_stack(self):
-    #     return self.data.tile_stack
-    
-    # @property
-    # def current_tile(self):
-    #     return self.data.current_tile
-
-    
 
 
 class Agent:
@@ -136,6 +132,9 @@ class Agent:
     
 
 class PlayerAgent(Agent):
+    """ 
+    Agente para la simulación.
+    """
     def __init__(self, turn=0):
         self.turn = turn
 
@@ -157,9 +156,10 @@ class PlayerAgent(Agent):
                 print("Illegal action. Passing instead.")
                 return "pass"
 
-
-
 class RandomAgent(Agent):
+    """ 
+    Agente que elige acciones aleatorias.
+    """
     def __init__(self, turn=0):
         self.turn = turn
         
@@ -169,7 +169,6 @@ class RandomAgent(Agent):
         if legal == []:
             return "pass"
         else:
-            import random
             return random.choice(legal)
 
 
@@ -188,9 +187,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     def getAction(self, gameState: GameState):
         """
         Returns the expectimax action using self.depth and self.evaluationFunction
-
         """
-        "*** YOUR CODE HERE ***"
         def exp_value(gameState: GameState, turn, depth):
             num_agents = gameState.getNumAgents()
             next_turn = (turn + 1) % num_agents 
@@ -235,6 +232,9 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         return ans
     
 class CarcassonneGame:
+    """ 
+    El juego tiene un tablero, una pila de piezas, un número de jugadores, el estado del juego y los agentes que juegan.
+    """
     def __init__(self, num_players = 2, player_agent = PlayerAgent(0)):
         self.board = board.Board()
         self.tile_stack = tiles.revolverLosas()
