@@ -100,8 +100,22 @@ Dicho de otra forma, no puedo seguir expandiendo el árbol.
 
 En caso del primer objetivo, la prueba de objetivo sería: 
 Revisar si al entrar al estado actual se cerró algún camino o ciudad, esto es: Para los caminos, todo camino está conectado a otro, hasta encontrar uno conectado a algún start. Para las ciudades, toda loseta con una ciudad está conectada entre si, esto es si no hay algún lado abierto.
-  
 
+---
+
+## 7. Ejemplo de juego
+
+
+---
+
+
+## 8. Resultados Random vs Expectimax y Expectimax vs Expectimax
+
+---
+
+## 9. Conclusiones
+
+--- 
 
 ### Cómo correr:
 
