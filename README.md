@@ -117,9 +117,9 @@ Luego de 10 partidas efectuando Expextimax vs Expectimax:
 <img width="608" height="188" alt="image" src="https://github.com/user-attachments/assets/e4214b34-f700-4905-b2e0-dd8eff669db8" />
 
 
-Claramente el jugador [0] jugó mejor la mayoría de las veces.
+Claramente el jugador [0] jugó mejor la mayoría de las veces ganando 7 veces mientras que el jugador [1] 3 veces.
 
-Luego de 10 partidas efectando Random vs Expectimax:
+Luego de 10 partidas efectuando Random vs Expectimax:
 
 <img width="524" height="189" alt="image" src="https://github.com/user-attachments/assets/3317ea11-db80-4372-9d7e-5f2402d2eca6" />
 
@@ -129,6 +129,13 @@ De donde claramente se ve que el jugador [1] es muy superior al rival, ganando t
 ---
 
 ## 9. Conclusiones
+
+- Como era de esperar el agente Expectimax siempre gana al agente aleatorio lo cual nos indica que tiene cierto nivel de razonamiento y que fue la descicion adecuada debido a la aleatoriedad del juego.
+- En el caso de Expectimax vs Expectimax, los resultados son variados lo cual es razonable por lo que la aleatoriedad juega un papel importante.
+- Fue posible adaptar el juego de carcassone debido a su estructura de turnos, azar y obtencion de puntos clara, gracias a esto Expectimax siempre toma la mejor elección.
+- La eleccion de lanzar un BFS desde cada ficha para conocer los caminos y ciudades cerradas, fue la mejor debido a que se descartan ciudades abiertas mas rapidamente.
+- El costo computacional de elegir la mejor opcion de colocacion es alto debido a que se revisan todas las posibles colocaciones validas junto con todas las rotaciones posibles.
+- El proyecto demuestra la posibilid de implementar algoritmo de IA para juegos de mesa. 
 
 --- 
 
